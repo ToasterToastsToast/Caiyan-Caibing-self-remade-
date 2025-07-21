@@ -1,0 +1,1192 @@
+:root {
+    --primary-color: #2c9a94;
+    --primary-light: #5abcb7;
+    --primary-dark: #1d7a74;
+    --secondary-color: #94a3b8;
+    --accent-color: #e2e8f0;
+    --background-light: #f8fafc;
+    --text-color: #334155;
+    --text-light: #64748b;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+body {
+    background-color: var(--background-light);
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 导航栏样式 */
+.bg-teal {
+    background-color: var(--primary-color) !important;
+}
+
+.navbar {
+    box-shadow: var(--shadow-md);
+    transition: var(--transition-base);
+}
+
+.navbar-brand,
+.nav-link {
+    color: white !important;
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.nav-link:hover {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transform: translateY(-2px);
+}
+
+/* 按钮样式 */
+.btn-teal {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+    font-weight: 500;
+    transition: var(--transition-base);
+    box-shadow: var(--shadow-sm);
+}
+
+.btn-teal:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.btn-outline-teal {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 500;
+    transition: var(--transition-base);
+}
+
+.btn-outline-teal:hover {
+    background-color: var(--primary-color);
+    color: white;
+    transform: translateY(-2px);
+}
+
+/* 游戏容器 */
+.game-container {
+    max-width: 800px;
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: var(--shadow-lg);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition-slow);
+    border: 1px solid var(--accent-color);
+}
+
+.game-container:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.header-section {
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--accent-color);
+    margin-bottom: 1.5rem;
+    animation: fadeInDown 0.6s ease-out;
+}
+
+.text-teal {
+    color: var(--primary-color) !important;
+}
+
+/* 聊天卡片 */
+.chat-card {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1.5rem;
+    transition: var(--transition-base);
+}
+
+.chat-card:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.chat-display {
+    height: 400px;
+    overflow-y: auto;
+    padding: 1.25rem;
+    background-color: var(--background-light);
+    border-bottom: 1px solid var(--accent-color);
+    font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    scroll-behavior: smooth;
+}
+
+/* 自定义滚动条 */
+.chat-display::-webkit-scrollbar {
+    width: 8px;
+}
+
+.chat-display::-webkit-scrollbar-track {
+    background: var(--accent-color);
+    border-radius: 4px;
+}
+
+.chat-display::-webkit-scrollbar-thumb {
+    background-color: var(--primary-light);
+    border-radius: 4px;
+}
+
+.message {
+    margin-bottom: 1rem;
+    padding: 0.75rem 1rem;
+    border-radius: 12px;
+    max-width: 80%;
+    position: relative;
+    animation: fadeInUp 0.4s ease-out;
+    transition: var(--transition-base);
+    opacity: 0;
+    animation-fill-mode: forwards;
+}
+
+.message:nth-child(odd) {
+    animation-delay: 0.1s;
+}
+
+.message:nth-child(even) {
+    animation-delay: 0.2s;
+}
+
+.message.user {
+    background-color: var(--primary-color);
+    color: white;
+    margin-left: auto;
+    border-bottom-right-radius: 4px;
+}
+
+.message.ai {
+    background-color: white;
+    border: 1px solid var(--accent-color);
+    margin-right: auto;
+    border-bottom-left-radius: 4px;
+    box-shadow: var(--shadow-sm);
+}
+
+.message.system {
+    background-color: var(--accent-color);
+    color: var(--text-light);
+    margin: 0 auto;
+    text-align: center;
+    font-size: 0.9em;
+    max-width: 100%;
+}
+
+.sender {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.9em;
+    transition: var(--transition-base);
+}
+
+/* 游戏信息 */
+.game-info {
+    background-color: white;
+    border-top: 1px solid var(--accent-color);
+    padding: 1rem !important;
+}
+
+.hint-text {
+    color: var(--primary-color);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+}
+
+.turn-count {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.9em;
+    display: inline-flex;
+    align-items: center;
+    transition: var(--transition-base);
+}
+
+.turn-count:hover {
+    transform: scale(1.05);
+}
+
+/* 输入区域 */
+.input-section {
+    background-color: white;
+    padding: 1rem !important;
+}
+
+#messageInput {
+    border-radius: 8px !important;
+    border: 1px solid var(--accent-color);
+    resize: none;
+    transition: var(--transition-base);
+}
+
+#messageInput:focus {
+    border-color: var(--primary-light);
+    box-shadow: 0 0 0 0.25rem rgba(44, 154, 148, 0.25);
+    transform: translateY(-2px);
+}
+
+/* 进度条 */
+.progress {
+    height: 6px !important;
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+    transition: width 0.6s ease;
+}
+
+/* 提示区域 */
+.tips-section {
+    background-color: white;
+    border-left: 4px solid var(--primary-color);
+    padding: 1rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+}
+
+.tips-section:hover {
+    transform: translateX(5px);
+}
+
+.tips-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+}
+
+.tips-list li {
+    padding: 0.5rem 0;
+    position: relative;
+    padding-left: 1.75rem;
+    transition: var(--transition-base);
+}
+
+.tips-list li:hover {
+    transform: translateX(5px);
+}
+
+.tips-list li:before {
+    content: "•";
+    color: var(--primary-color);
+    font-size: 1.5em;
+    position: absolute;
+    left: 0.5rem;
+    top: 0.25rem;
+}
+
+/* 胜利页面 */
+.win-container {
+    max-width: 500px;
+    margin: 2rem auto;
+    background-color: white;
+    border-radius: 15px;
+    box-shadow: var(--shadow-lg);
+    overflow: hidden;
+    position: relative;
+    animation: fadeIn 0.6s ease-out, bounceIn 0.8s ease-out;
+
+}
+
+.win-content {
+    position: relative;
+    z-index: 2;
+    padding: 2rem;
+}
+
+.trophy-icon {
+    font-size: 4rem;
+    color: #d4af37;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    animation: bounce 2s infinite, pulse 2s infinite;
+}
+
+.win-title {
+    color: var(--primary-color);
+    font-weight: 700;
+    margin: 1rem 0;
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.disease-name {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin: 1rem 0;
+    padding: 0.5rem 1.25rem;
+    background-color: var(--background-light);
+    border-radius: 20px;
+    display: inline-block;
+    animation: fadeIn 0.8s ease-out;
+    box-shadow: var(--shadow-sm);
+}
+
+.score-display {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 1.5rem 0;
+    animation: pulse 2s infinite;
+}
+
+.score-label {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--text-light);
+    margin-right: 0.5rem;
+}
+
+/* 排行榜 */
+.leaderboard-table {
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition-base);
+}
+
+.leaderboard-table:hover {
+    box-shadow: var(--shadow-md);
+}
+
+.leaderboard-table thead {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.leaderboard-table th {
+    font-weight: 500;
+    padding: 1rem !important;
+}
+
+.leaderboard-table tr {
+    transition: var(--transition-base);
+}
+
+.leaderboard-table tr:hover {
+    background-color: var(--background-light);
+    transform: translateX(5px);
+}
+
+.gold {
+    color: #d4af37;
+    animation: pulse 2s infinite;
+}
+
+.silver {
+    color: #c0c0c0;
+}
+
+.bronze {
+    color: #cd7f32;
+}
+
+/* 模态框 */
+.modal-content {
+    border-radius: 12px;
+    overflow: hidden;
+    border: none;
+    box-shadow: var(--shadow-lg);
+    transition: var(--transition-slow);
+}
+
+.modal-header {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 动画 */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+@keyframes pulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(1.2);
+        opacity: 0;
+    }
+}
+
+/* 波纹效果 */
+.ripple {
+    position: relative;
+    overflow: hidden;
+}
+
+.ripple:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10.01%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10, 10);
+    opacity: 0;
+    transition: transform 0.5s, opacity 1s;
+}
+
+.ripple:active:after {
+    transform: scale(0, 0);
+    opacity: 0.3;
+    transition: 0s;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .chat-display {
+        height: 300px;
+    }
+
+    .game-container {
+        padding: 1.25rem;
+    }
+
+    .win-container {
+        margin: 1rem auto;
+    }
+}
+
+/* 加载动画 */
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: white;
+    animation: spin 1s ease-in-out infinite;
+}
+
+/* 模态框修复 */
+.modal {
+    z-index: 1040 !important;
+}
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    transition: opacity 0.3s ease;
+}
+
+/* 日志内容样式增强 */
+.log-content {
+    white-space: pre-wrap;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #f8f9fa;
+    max-height: 60vh;
+    overflow-y: auto;
+    line-height: 1.6;
+    border-radius: 0 0 12px 12px;
+}
+
+/* 医生和病人的消息区分 */
+.log-content:before {
+    content: "";
+    display: block;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--primary-color), transparent);
+    margin: 10px 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .modal-dialog {
+        margin: 0.5rem auto;
+    }
+
+    .log-content {
+        max-height: 50vh;
+    }
+}
+
+/* 表单样式增强 */
+#playerName {
+    transition: all 0.3s ease;
+    border: 1px solid var(--accent-color);
+}
+
+#playerName:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.2rem rgba(44, 154, 148, 0.25);
+}
+
+/* 加载动画 */
+.spinner-border {
+    vertical-align: middle;
+    margin-right: 0.5rem;
+}
+
+/* 按钮状态 */
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+/* 添加在现有的动画部分 */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOutUp {
+    from {
+        transform: translateY(0);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+}
+
+.modal.fade .modal-dialog {
+    transition: transform 0.3s ease-out, opacity 0.3s ease;
+    transform: translateY(-50px);
+    opacity: 0;
+}
+
+.modal.show .modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.modal.fade.slide .modal-dialog {
+    animation: slideInDown 0.4s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+.modal.fade.slide.hide .modal-dialog {
+    animation: slideOutUp 0.3s cubic-bezier(0.55, 0.085, 0.68, 0.53) forwards;
+}
+
+/* 添加到style.css的底部 */
+
+/* 认证页面样式 */
+.auth-container {
+    padding: 2rem 0;
+}
+
+.game-container {
+    max-width: 100%;
+    margin-bottom: 2rem;
+}
+
+.input-group-text {
+    background-color: var(--accent-color);
+    border-color: var(--accent-color);
+    color: var(--primary-color);
+}
+
+.form-control {
+    transition: var(--transition-base);
+    border-color: var(--accent-color);
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(44, 154, 148, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .auth-container {
+        padding: 1rem;
+    }
+
+    .game-container {
+        padding: 1.5rem;
+    }
+
+    .header-section h3 {
+        font-size: 1.5rem;
+    }
+}
+
+/* 添加到style.css的底部 */
+.trust-meter {
+    background-color: white;
+    padding: 0.75rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.trust-meter .progress {
+    height: 10px;
+    border-radius: 5px;
+}
+
+/* 信任度颜色 */
+.bg-success {
+    background-color: #28a745 !important;
+}
+
+.bg-warning {
+    background-color: #ffc107 !important;
+}
+
+.bg-danger {
+    background-color: #dc3545 !important;
+    animation: pulse 1.5s infinite;
+}
+
+/* 游戏结束模态框样式 */
+.modal-header.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+.modal-header .btn-close-white {
+    filter: invert(1);
+}
+
+/* 增强的称号系统样式 */
+.title-section {
+    padding: 2rem;
+    background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(44, 154, 148, 0.15);
+    margin: 2rem 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.title-section:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 5px;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+}
+
+.title-section h4 {
+    font-size: 1.8rem;
+    color: var(--primary-dark);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+}
+
+.title-badge-container {
+    display: inline-block;
+    position: relative;
+    perspective: 1000px;
+}
+
+.title-badge {
+    padding: 2rem 3rem;
+    border-radius: 20px;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: white;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    min-width: 300px;
+    min-height: 200px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    transform-style: preserve-3d;
+    border: 3px solid rgba(255, 255, 255, 0.4);
+}
+
+.title-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 2;
+}
+
+.title-main {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+    letter-spacing: 1px;
+}
+
+.title-subtext {
+    font-size: 1.2rem;
+    font-weight: 500;
+    opacity: 0.9;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    z-index: 2;
+}
+
+.title-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 70%);
+    z-index: 1;
+    animation: glowRotate 10s linear infinite;
+}
+
+@keyframes glowRotate {
+    0% {
+        transform: rotate(0deg) translate(0, 0);
+    }
+
+    100% {
+        transform: rotate(360deg) translate(0, 0);
+    }
+}
+
+/* 不同称号的样式 */
+.title-badge.novice {
+    background: linear-gradient(135deg, #94a3b8, #64748b);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.title-badge.common {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    animation: floatCommon 4s ease-in-out infinite;
+}
+
+@keyframes floatCommon {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+.title-badge.rare {
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
+    box-shadow: 0 0 30px rgba(155, 89, 182, 0.5);
+    animation: floatRare 3s ease-in-out infinite;
+}
+
+@keyframes floatRare {
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    25% {
+        transform: translateY(-10px) rotate(2deg);
+    }
+
+    75% {
+        transform: translateY(-10px) rotate(-2deg);
+    }
+}
+
+.title-badge.epic {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    box-shadow: 0 0 40px rgba(231, 76, 60, 0.6);
+    animation: pulseEpic 2s infinite;
+}
+
+@keyframes pulseEpic {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 40px rgba(231, 76, 60, 0.6);
+    }
+
+    50% {
+        transform: scale(1.02);
+        box-shadow: 0 0 60px rgba(231, 76, 60, 0.8);
+    }
+}
+
+.title-badge.legendary {
+    background: linear-gradient(135deg, #f1c40f, #f39c12);
+    box-shadow: 0 0 50px rgba(241, 196, 15, 0.7);
+    animation: shineLegendary 3s infinite;
+}
+
+@keyframes shineLegendary {
+    0% {
+        box-shadow: 0 0 50px rgba(241, 196, 15, 0.7);
+    }
+
+    50% {
+        box-shadow: 0 0 70px rgba(241, 196, 15, 0.9);
+    }
+
+    100% {
+        box-shadow: 0 0 50px rgba(241, 196, 15, 0.7);
+    }
+}
+
+.title-badge.god {
+    background: linear-gradient(135deg, #1abc9c, #16a085);
+    box-shadow: 0 0 60px rgba(26, 188, 156, 0.8);
+    animation: godPulse 2s infinite;
+}
+
+@keyframes godPulse {
+
+    0%,
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 60px rgba(26, 188, 156, 0.8);
+    }
+
+    50% {
+        transform: scale(1.03);
+        box-shadow: 0 0 80px rgba(26, 188, 156, 1);
+    }
+}
+
+/* 添加粒子效果 */
+.title-badge::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle fill='%23ffffff' fill-opacity='0.2' cx='50' cy='50' r='1'/%3E%3Ccircle fill='%23ffffff' fill-opacity='0.2' cx='150' cy='20' r='1.5'/%3E%3Ccircle fill='%23ffffff' fill-opacity='0.2' cx='30' cy='180' r='1'/%3E%3Ccircle fill='%23ffffff' fill-opacity='0.2' cx='180' cy='150' r='1.5'/%3E%3Ccircle fill='%23ffffff' fill-opacity='0.2' cx='90' cy='120' r='1'/%3E%3Ccircle fill='%23ffffff' fill-opacity='0.2' cx='120' cy='80' r='1.5'/%3E%3C/svg%3E");
+    z-index: 1;
+    opacity: 0.4;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .title-badge {
+        font-size: 2rem;
+        padding: 1.5rem 2rem;
+        min-width: 250px;
+        min-height: 160px;
+    }
+
+    .title-main {
+        font-size: 2rem;
+    }
+
+    .title-icon {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .title-badge {
+        font-size: 1.8rem;
+        padding: 1.2rem 1.8rem;
+        min-width: 220px;
+        min-height: 140px;
+    }
+
+    .title-main {
+        font-size: 1.8rem;
+    }
+
+    .title-icon {
+        font-size: 2.5rem;
+    }
+}
+
+/* 加载进度条动画增强 */
+.progress-bar-animated {
+    animation: progressAnimation 1.5s linear infinite;
+    background-image: linear-gradient(45deg,
+            rgba(255, 255, 255, 0.15) 25%,
+            transparent 25%,
+            transparent 50%,
+            rgba(255, 255, 255, 0.15) 50%,
+            rgba(255, 255, 255, 0.15) 75%,
+            transparent 75%,
+            transparent);
+    background-size: 1rem 1rem;
+}
+
+@keyframes progressAnimation {
+    0% {
+        background-position: 1rem 0;
+    }
+
+    100% {
+        background-position: 0 0;
+    }
+}
+
+.progress-container {
+    height: 6px;
+    transition: all 0.3s ease;
+}
+
+/* style.css */
+.disease-card {
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.disease-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: white;
+}
+
+.card-header.bg-teal {
+    background-color: var(--primary-color) !important;
+    color: white;
+}
+
+/* 在style.css中添加 */
+.submit-disease-form label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.submit-disease-form textarea {
+    min-height: 100px;
+}
+
+.submit-disease-form input[type="text"],
+.submit-disease-form textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid var(--accent-color);
+    border-radius: 8px;
+    transition: var(--transition-base);
+}
+
+.submit-disease-form input[type="text"]:focus,
+.submit-disease-form textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(44, 154, 148, 0.25);
+    outline: none;
+}
+
+/* Add to style.css */
+.unlock-hint {
+    font-size: 0.9rem;
+    z-index: 10;
+}
+
+.btn-lg {
+    font-size: 1.1rem;
+    padding: 0.5rem 1.5rem;
+}
+
+.submit-disease-form .form-control,
+.submit-disease-form textarea {
+    transition: all 0.3s ease;
+    border: 1px solid var(--accent-color);
+}
+
+.submit-disease-form .form-control:focus,
+.submit-disease-form textarea:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(44, 154, 148, 0.25);
+}
+
+.invalid-feedback {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+}
+
+/* 已诊断疾病卡片样式 */
+.disease-card {
+    transition: var(--transition-base);
+    background-color: white;
+    border: 1px solid var(--accent-color);
+    cursor: pointer;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.disease-card:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-md);
+    border-color: var(--primary-light);
+}
+
+.disease-card h6 {
+    transition: var(--transition-base);
+    position: relative;
+    z-index: 2;
+}
+
+.disease-card small {
+    transition: var(--transition-base);
+    position: relative;
+    z-index: 2;
+}
+
+.disease-card::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, rgba(44, 154, 148, 0.1), rgba(44, 154, 148, 0.05));
+    z-index: 1;
+    opacity: 0;
+    transition: var(--transition-base);
+}
+
+.disease-card:hover::before {
+    opacity: 1;
+}
+
+.disease-card:hover h6 {
+    color: var(--primary-dark);
+}
+
+/* 确保链接没有下划线 */
+.disease-link {
+    text-decoration: none !important;
+    color: inherit;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .disease-card {
+        padding: 1rem;
+    }
+}
+
+/* 病人评价样式 */
+.patient-evaluation {
+    max-width: 80%;
+    margin: 0 auto;
+    border-left: 3px solid var(--primary-color);
+    background-color: rgba(44, 154, 148, 0.1) !important;
+    animation: fadeIn 1s ease-out;
+}
+
+.patient-evaluation i {
+    color: var(--primary-color);
+}
