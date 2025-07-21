@@ -1,0 +1,52 @@
+{% extends "game/base.html" %}
+
+{% block content %}
+<div class="home-container text-center animate__animated animate__fadeIn">
+    <div class="hero-section mb-5">
+        <h1 class="display-4 fw-bold text-pink mb-4">医生诊断挑战</h1>
+        <p class="lead mb-4">通过问诊找出患者的疾病！回合越少得分越高</p>
+        <div class="d-flex justify-content-center gap-3">
+            {% if request.session.username %}
+                <span class="badge bg-success">已登录：{{ request.session.username }}</span>
+                <a href="{% url 'chat' %}" class="btn btn-pink btn-lg">
+                    <i class="fas fa-gamepad me-2"></i>进入游戏
+                </a>
+                <a href="{% url 'logout' %}" class="btn btn-outline-pink btn-lg">
+                    <i class="fas fa-sign-out-alt me-2"></i>登出
+                </a>
+            {% else %}
+                <a href="{% url 'register' %}" class="btn btn-pink btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>注册
+                </a>
+                <a href="{% url 'login' %}" class="btn btn-outline-pink btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>登录
+                </a>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="features row">
+        <div class="col-md-4 mb-4">
+            <div class="feature-card p-4 h-100">
+                <i class="fas fa-stethoscope feature-icon mb-3"></i>
+                <h4>真实诊断体验</h4>
+                <p>模拟真实医患对话，测试你的诊断能力</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="feature-card p-4 h-100">
+                <i class="fas fa-trophy feature-icon mb-3"></i>
+                <h4>排行榜竞争</h4>
+                <p>与全球玩家比拼诊断技巧</p>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="feature-card p-4 h-100">
+                <i class="fas fa-users feature-icon mb-3"></i>
+                <h4>多种患者性格</h4>
+                <p>应对不同性格的患者，提升沟通技巧</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

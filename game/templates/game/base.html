@@ -1,0 +1,54 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>医生模拟器 | 诊断挑战</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-teal shadow-sm">
+        <div class="container">
+            <a class="navbar-brand animate__animated animate__fadeInLeft" href="{% url 'chat' %}">
+                <i class="fas fa-stethoscope me-2"></i>医生诊断挑战
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <!-- base.html 导航栏部分 -->
+            <div class="collapse navbar-collapse animate__animated animate__fadeInRight" id="navbarNav">
+                <div class="navbar-nav ms-auto">
+                    <a class="nav-link active" href="{% url 'chat' %}"><i class="fas fa-gamepad me-1"></i>新游戏</a>
+                    <a class="nav-link" href="{% url 'daily_challenge' %}"><i class="fas fa-calendar-day me-1"></i>今日挑战</a>
+                    <a class="nav-link" href="{% url 'scoreboard' %}"><i class="fas fa-trophy me-1"></i>排行榜</a>
+                    {% if request.session.username %}
+                        <a class="nav-link" href="{% url 'profile' %}"><i class="fas fa-user me-1"></i>个人空间</a>
+                        <span class="nav-link">欢迎, {{ request.session.username }}</span>
+                        <a class="nav-link" href="{% url 'logout' %}"><i class="fas fa-sign-out-alt me-1"></i>登出</a>
+                    {% else %}
+                        <a class="nav-link" href="{% url 'login' %}"><i class="fas fa-sign-in-alt me-1"></i>登录</a>
+                        <a class="nav-link" href="{% url 'register' %}"><i class="fas fa-user-plus me-1"></i>注册</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <div class="container my-4 animate__animated animate__fadeIn animate__faster">
+        {% block content %}{% endblock %}
+    </div>
+    
+    <footer class="footer mt-auto py-3 bg-teal text-white">
+        <div class="container text-center">
+            <span>© 2025 医生诊断挑战 - 测试你的医学直觉</span>
+        </div>
+    </footer>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

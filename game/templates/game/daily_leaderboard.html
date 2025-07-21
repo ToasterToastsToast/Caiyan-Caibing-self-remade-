@@ -1,0 +1,129 @@
+{% extends "game/base.html" %}
+
+{% block extra_css %}
+<style>
+    .daily-leaderboard-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .daily-header {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+    }
+    .date-selector {
+        background-color: #e9ecef;
+        border-radius: 5px;
+        padding: 10px;
+    }
+    .daily-badge {
+        background-color: #2575fc;
+        color: white;
+    }
+    .daily-table {
+        background-color: white;
+        font-size: 0.9rem;
+    }
+    .daily-table th {
+        background-color: #f1f3f5;
+        padding: 0.5rem 1rem;
+    }
+    .daily-table td {
+        padding: 0.5rem 1rem;
+        vertical-align: middle;
+    }
+    .daily-podium-1 {
+        background-color: #ffd700 !important;
+    }
+    .daily-podium-2 {
+        background-color: #c0c0c0 !important;
+    }
+    .daily-podium-3 {
+        background-color: #cd7f32 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="daily-leaderboard-container animate__animated animate__fadeIn">
+    <div class="daily-header p-4 mb-4 text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-calendar-alt me-2"></i>每日挑战排行榜</h1>
+        <p class="lead mb-0">{{ current_date|date:"Y年m月d日" }} 的战绩</p>
+    </div>
+    
+    <div class="date-selector mb-4 p-3">
+        <div class="row align-items-center">
+            <div class="col-md-6 mb-2 mb-md-0">
+                <h5 class="mb-0"><i class="fas fa-history me-2"></i>选择日期</h5>
+            </div>
+            <div class="col-md-6">
+                <select class="form-select" id="dateSelect">
+                    {% for d in challenge_dates %}
+                    <option value="{{ d|date:'Y-m-d' }}" {% if d == current_date %}selected{% endif %}>
+                        {{ d|date:"Y年m月d日" }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table daily-table table-hover">
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>玩家</th>
+                    <th>分数</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in leaderboard.top_records.all|dictsortreversed:"score" %}
+                <tr class="{% if forloop.counter == 1 %}daily-podium-1{% elif forloop.counter == 2 %}daily-podium-2{% elif forloop.counter == 3 %}daily-podium-3{% endif %}">
+                    <td>
+                        {% if forloop.counter == 1 %}
+                            <span class="badge daily-badge">🥇</span>
+                        {% elif forloop.counter == 2 %}
+                            <span class="badge daily-badge">🥈</span>
+                        {% elif forloop.counter == 3 %}
+                            <span class="badge daily-badge">🥉</span>
+                        {% else %}
+                            {{ forloop.counter }}
+                        {% endif %}
+                    </td>
+                    <td>{{ record.user.username }}</td>
+                    <td>{{ record.score }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="3" class="text-center py-4">
+                        <i class="fas fa-inbox me-2"></i>暂无挑战记录
+                    </td>
+                </tr>
+                {% endfor %}
+                {% if is_today and request.session.username %}
+                <tr class="bg-light">
+                    <td colspan="3" class="text-center py-3">
+                        <a href="{% url 'daily_challenge' %}" class="btn btn-primary">
+                            <i class="fas fa-play me-1"></i>开始今日挑战
+                        </a>
+                    </td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 日期选择器
+    document.getElementById('dateSelect').addEventListener('change', function() {
+        window.location.href = "{% url 'daily_challenge_leaderboard' %}" + this.value + "/";
+    });
+});
+</script>
+{% endblock %}

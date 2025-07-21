@@ -1,0 +1,138 @@
+{% extends "game/base.html" %}
+
+{% block extra_css %}
+<style>
+    .daily-challenge-container {
+        background-color: #f0f8ff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+    .daily-challenge-header {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+        border-radius: 10px 10px 0 0;
+    }
+    .challenge-info {
+        background-color: white;
+        border-left: 4px solid #2575fc;
+    }
+    .btn-daily {
+        background-color: #6a11cb;
+        color: white;
+        border: none;
+    }
+    .btn-daily:hover {
+        background-color: #2575fc;
+        color: white;
+    }
+    .hidden-before-challenge {
+        display: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="daily-challenge-container animate__animated animate__fadeIn">
+    <div class="daily-challenge-header p-4 text-center">
+        <h1 class="display-5 fw-bold"><i class="fas fa-calendar-day me-2"></i>每日挑战</h1>
+        <p class="lead">{{ challenge.date|date:"Y年m月d日" }} - 特别挑战</p>
+    </div>
+    
+    <div class="p-4">
+        {% if already_played %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>您今天已经完成过每日挑战了！您的成绩是 <strong>{{ user_score }}</strong> 分。
+            <a href="{% url 'daily_challenge_leaderboard' %}" class="alert-link">查看排行榜</a>
+        </div>
+        {% endif %}
+        
+        <div class="challenge-info p-4 mb-4 {% if not already_played %}hidden-before-challenge{% endif %}">
+            <h4><i class="fas fa-info-circle me-2 text-primary"></i>挑战详情</h4>
+            <div class="row mt-3">
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-disease me-3 text-primary" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <h5 class="mb-0">今日疾病</h5>
+                            <p class="mb-0">{% if already_played %}{{ disease.name }}{% else %}？？？{% endif %}</p>
+                            <small class="text-muted">{% if already_played %}{{ disease.symptoms|join:", " }}{% else %}？？？{% endif %}</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-user-tag me-3 text-primary" style="font-size: 1.5rem;"></i>
+                        <div>
+                            <h5 class="mb-0">患者性格</h5>
+                            <p class="mb-0">{% if already_played %}{{ challenge.persona }}{% else %}？？？{% endif %}</p>
+                            <small class="text-muted">会影响患者的回答方式</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <h5><i class="fas fa-trophy me-2 text-primary"></i>挑战规则</h5>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">• 每天只能挑战一次</li>
+                    <li class="list-group-item">• 所有玩家面对相同的疾病和患者</li>
+                    <li class="list-group-item">• 高分将进入每日排行榜</li>
+                    <li class="list-group-item">• 挑战不计入普通游戏统计</li>
+                </ul>
+            </div>
+        </div>
+        
+        {% if not already_played %}
+        <div class="text-center mt-4">
+            <a href="{% url 'daily_challenge_chat' %}" class="btn btn-daily btn-lg px-5 py-3">
+                <i class="fas fa-play me-2"></i>开始挑战
+            </a>
+            <div class="mt-3 text-muted">
+                <i class="fas fa-lock me-1"></i>完成挑战可查看今日疾病和患者详情
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="text-center p-4">
+        <a href="{% url 'daily_challenge_leaderboard' %}" class="btn btn-outline-primary me-2">
+            <i class="fas fa-trophy me-1"></i>查看排行榜
+        </a>
+        <a href="{% url 'chat' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-gamepad me-1"></i>普通模式
+        </a>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startBtn = document.getElementById('startChallengeBtn');
+    if (startBtn) {
+        startBtn.addEventListener('click', function() {
+            fetch("{% url 'daily_challenge' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: ''
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = "{% url 'chat' %}";
+                } else {
+                    alert(data.error || '开始挑战失败');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('网络错误，请重试');
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

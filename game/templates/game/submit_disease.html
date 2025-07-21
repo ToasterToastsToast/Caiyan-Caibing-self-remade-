@@ -1,0 +1,192 @@
+<!-- templates/game/submit_disease.html -->
+{% extends "game/base.html" %}
+
+{% block content %}
+<div class="game-container animate__animated animate__fadeIn">
+    <div class="header-section text-center mb-4">
+        <h3 class="text-teal"><i class="fas fa-plus-circle me-2"></i>贡献新病例</h3>
+        <p class="text-muted">分享您的医学知识，丰富游戏内容</p>
+    </div>
+    
+    {% if messages %}
+        {% for message in messages %}
+            {% if message.tags == 'success' %}
+            <div class="alert alert-success alert-dismissible fade show animate__animated animate__bounceIn" role="alert">
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-check-circle me-2" style="font-size: 1.5rem;"></i>
+                    <div>
+                        <h5 class="alert-heading mb-1">提交成功！</h5>
+                        <p class="mb-0">感谢您的贡献！我们的团队将会审核您提交的病例。</p>
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endif %}
+        {% endfor %}
+    {% endif %}
+    
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <div class="card-header bg-teal text-white py-3">
+            <h5 class="mb-0"><i class="fas fa-file-medical me-2"></i>病例信息</h5>
+        </div>
+        <div class="card-body p-4">
+            <form method="post" class="submit-disease-form">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="{{ form.name.id_for_label }}" class="form-label">疾病名称</label>
+                            {{ form.name }}
+                            {% if form.name.errors %}
+                                <div class="invalid-feedback d-block">{{ form.name.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="{{ form.link.id_for_label }}" class="form-label">相关链接(可选)</label>
+                            <div class="input-group">
+                                {{ form.link }}
+                                <button class="btn btn-outline-secondary" type="button" id="validateLinkBtn">
+                                    <i class="fas fa-link"></i>
+                                </button>
+                            </div>
+                            <!-- 新增视觉反馈元素 -->
+                            <div id="linkValidationFeedback" class="d-flex align-items-center mt-1" style="display: none !important;">
+                                <i class="fas me-2"></i>
+                                <span></span>
+                            </div>
+                            {% if form.link.errors %}
+                                <div class="invalid-feedback d-block">{{ form.link.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.symptoms.id_for_label }}" class="form-label">症状</label>
+                    {{ form.symptoms }}
+                    <small class="text-muted">{{ form.symptoms.help_text }}</small>
+                    {% if form.symptoms.errors %}
+                        <div class="invalid-feedback d-block">{{ form.symptoms.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="{{ form.onset.id_for_label }}" class="form-label">发病经过</label>
+                            {{ form.onset }}
+                            {% if form.onset.errors %}
+                                <div class="invalid-feedback d-block">{{ form.onset.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <div class="form-group">
+                            <label for="{{ form.examinations.id_for_label }}" class="form-label">检查结果</label>
+                            {{ form.examinations }}
+                            <small class="text-muted">{{ form.examinations.help_text }}</small>
+                            {% if form.examinations.errors %}
+                                <div class="invalid-feedback d-block">{{ form.examinations.errors }}</div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="{{ form.notes.id_for_label }}" class="form-label">备注</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="invalid-feedback d-block">{{ form.notes.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="text-center mt-5">
+                    <button type="submit" class="btn btn-teal btn-lg px-5 py-2 me-3">
+                        <i class="fas fa-paper-plane me-2"></i>提交病例
+                    </button>
+                    <a href="{% url 'profile' %}" class="btn btn-outline-teal btn-lg px-5 py-2">
+                        <i class="fas fa-arrow-left me-2"></i>返回
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <div class="d-inline-block bg-light p-3 rounded" style="max-width: 600px;">
+            <i class="fas fa-info-circle text-teal me-2"></i>
+            <small class="text-muted">您提交的病例将由我们的医疗团队审核后加入游戏。感谢您为医学教育做出的贡献！</small>
+        </div>
+    </div>
+</div>
+
+<!-- 添加自定义脚本 -->
+{% block scripts %}
+{{ block.super }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const linkInput = document.querySelector('#{{ form.link.id_for_label }}');
+    const validateBtn = document.getElementById('validateLinkBtn');
+    const feedbackEl = document.getElementById('linkValidationFeedback');
+    
+    // 检查链接格式的函数
+    function isValidUrl(url) {
+        try {
+            new URL(url);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }
+    
+    // 更新视觉反馈
+    function updateLinkValidation() {
+        const url = linkInput.value.trim();
+        
+        if (url === '') {
+            feedbackEl.style.display = 'none';
+            linkInput.classList.remove('is-invalid', 'is-valid');
+            return;
+        }
+        
+        if (isValidUrl(url)) {
+            feedbackEl.style.display = 'flex';
+            feedbackEl.innerHTML = '<i class="fas fa-check-circle text-success me-2"></i><span class="text-success">链接格式正确</span>';
+            linkInput.classList.remove('is-invalid');
+            linkInput.classList.add('is-valid');
+        } else {
+            feedbackEl.style.display = 'flex';
+            feedbackEl.innerHTML = '<i class="fas fa-exclamation-circle text-danger me-2"></i><span class="text-danger">请输入有效的URL格式</span>';
+            linkInput.classList.remove('is-valid');
+            linkInput.classList.add('is-invalid');
+        }
+    }
+    
+    // 添加事件监听
+    linkInput.addEventListener('input', updateLinkValidation);
+    validateBtn.addEventListener('click', updateLinkValidation);
+    
+    // 表单提交时验证
+    document.getElementById('diseaseForm').addEventListener('submit', function(e) {
+        const url = linkInput.value.trim();
+        if (url !== '' && !isValidUrl(url)) {
+            e.preventDefault();
+            updateLinkValidation();
+            
+            // 添加错误动画效果
+            linkInput.classList.add('animate__animated', 'animate__shakeX');
+            setTimeout(() => {
+                linkInput.classList.remove('animate__shakeX');
+            }, 500);
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% endblock %}

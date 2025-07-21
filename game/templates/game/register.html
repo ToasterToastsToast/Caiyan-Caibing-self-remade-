@@ -1,0 +1,203 @@
+<!-- register.html -->
+{% extends "game/base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-7">
+        <div class="game-container animate__animated animate__fadeInUp">
+            <div class="header-section text-center">
+                <h3 class="text-teal mb-3"><i class="fas fa-user-plus me-2"></i>注册新账户</h3>
+                <p class="text-muted">创建账号开始您的医学诊断挑战</p>
+            </div>
+            
+            {% if form.errors %}
+            <div class="alert alert-danger animate__animated animate__headShake">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                {% for field, errors in form.errors.items %}
+                    {% for error in errors %}
+                        {{ error }}<br>
+                    {% endfor %}
+                {% endfor %}
+            </div>
+            {% endif %}
+            
+            <form method="post" class="mt-4">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="id_email" class="form-label">电子邮箱</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-envelope"></i></span>
+                            {{ form.email }}
+                        </div>
+                        <button type="button" class="btn btn-outline-teal btn-sm mt-2 ripple" id="sendCodeBtn">
+                            <i class="fas fa-paper-plane me-1"></i>发送验证码
+                        </button>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <label for="id_email_code" class="form-label">邮箱验证码</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                            {{ form.email_code }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <label for="id_username" class="form-label">用户名</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="fas fa-user"></i></span>
+                        {{ form.username }}
+                    </div>
+                </div>
+                
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label for="id_password1" class="form-label">密码</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            {{ form.password1 }}
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-6 mb-4">
+                        <label for="id_password2" class="form-label">确认密码</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-key"></i></span>
+                            {{ form.password2 }}
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-teal w-100 py-2 mb-3 ripple">
+                    <i class="fas fa-user-plus me-2"></i>注册账号
+                </button>
+                
+                <div class="text-center mt-4">
+                    <p class="text-muted small">已有账户？ 
+                        <a href="{% url 'login' %}" class="text-teal">立即登录</a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+<!-- register.html -->
+{% block scripts %}
+<script>
+document.getElementById('sendCodeBtn').onclick = function() {
+    var email = document.getElementById('id_email').value;
+    if (!email) { 
+        alert('请输入邮箱'); 
+        return; 
+    }
+    
+    this.disabled = true;
+    this.innerHTML = '<span class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>发送中...';
+    
+    fetch('/send_code/?email=' + encodeURIComponent(email))
+        .then(res => res.json())
+        .then(data => {
+            alert(data.msg);
+            this.innerHTML = '<i class="fas fa-paper-plane me-1"></i>发送验证码';
+            this.disabled = false;
+            
+            // 开始60秒倒计时
+            if(data.success) {
+                let countdown = 60;
+                const originalText = this.innerHTML;
+                const timer = setInterval(() => {
+                    this.innerHTML = `(${countdown})秒后重试`;
+                    countdown--;
+                    if(countdown < 0) {
+                        clearInterval(timer);
+                        this.innerHTML = originalText;
+                        this.disabled = false;
+                    }
+                }, 1000);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            this.innerHTML = '<i class="fas fa-paper-plane me-1"></i>发送验证码';
+            this.disabled = false;
+        });
+};
+
+function checkEmailAvailability(emailInput) {
+    const email = emailInput.value.trim();
+    const sendCodeBtn = document.getElementById('sendCodeBtn');
+    
+    if (!email) {
+        removeEmailError(emailInput);
+        sendCodeBtn.disabled = false; // 邮箱为空时解除禁用
+        return;
+    }
+
+    fetch(`/check_email/?email=${encodeURIComponent(email)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.valid) {
+                removeEmailError(emailInput);
+                sendCodeBtn.disabled = false; // 邮箱可用时解除禁用
+            } else {
+                showEmailError(emailInput, data.msg);
+                sendCodeBtn.disabled = true; // 邮箱重复时禁用按钮
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+// 移除错误提示（返回 Promise，确保动画完成）
+function removeEmailError(emailInput) {
+    return new Promise((resolve) => {
+        const oldError = emailInput.parentNode.querySelector('#email-error');
+        if (!oldError) {
+            resolve();
+            return;
+        }
+
+        oldError.classList.add('animate__fadeOut');
+        setTimeout(() => {
+            oldError.remove();
+            resolve();
+        }, 300);
+    });
+}
+
+// 显示错误提示（等待删除完成后再插入）
+async function showEmailError(emailInput, errorMsg) {
+    await removeEmailError(emailInput);
+
+    // 创建新的错误提示
+    const errorDiv = document.createElement('div');
+    errorDiv.className = 'alert alert-danger mt-2 animate__animated animate__fadeIn';
+    errorDiv.innerHTML = `<i class="fas fa-exclamation-circle me-2"></i>${errorMsg}`;
+    errorDiv.id = 'email-error';
+
+    // 插入到邮箱输入框下方
+    emailInput.parentNode.appendChild(errorDiv);
+
+    // 禁用注册按钮（可选）
+    document.querySelector('button[type="submit"]').disabled = true;
+}
+
+// 监听输入框事件
+document.getElementById('id_email').addEventListener('input', function() {
+    checkEmailAvailability(this);
+});
+
+document.getElementById('id_email').addEventListener('blur', function() {
+    checkEmailAvailability(this);
+});
+
+let debounceTimer;
+document.getElementById('id_email').addEventListener('input', function() {
+    clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => checkEmailAvailability(this), 1000);
+});
+</script>
+{% endblock %}

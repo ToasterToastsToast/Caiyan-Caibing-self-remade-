@@ -1,0 +1,162 @@
+{% extends "game/base.html" %}
+
+{% block content %}
+<div class="win-container animate__animated animate__bounceIn">
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    <div class="confetti"></div>
+    
+    <div class="win-content text-center p-4">
+        <div class="trophy-icon mb-3">
+            <i class="fas fa-trophy"></i>
+        </div>
+        <h2 class="win-title mb-3">诊断成功!</h2>
+        <p class="disease-name">{{disease}}</p>
+        
+            <!-- 添加病人评价 -->
+        <div class="patient-evaluation mb-3 p-3 bg-light rounded">
+            <i class="fas fa-comment-medical me-2"></i>
+            <span class="fst-italic">{{ patient_evaluation }}</span>
+        </div>
+
+        <div class="score-display mb-4">
+            <span class="score-label">得分:</span>
+            <span class="score-value">{{ score }}</span>
+        </div>
+        
+       <div class="action-buttons d-flex justify-content-center gap-3">
+            <button id="saveScoreBtn" class="btn btn-pink">
+                <i class="fas fa-save me-1"></i>上传战绩
+            </button>
+            <a href="{% url 'chat' %}" class="btn btn-outline-pink">
+                <i class="fas fa-redo me-1"></i>再来一局
+            </a>
+            {% for disease_data in diseases %}
+                {% if disease_data.name == disease %}
+                    <a href="{{ disease_data.link }}" target="_blank" class="btn btn-teal">
+                        <i class="fas fa-book me-1"></i>查看疾病详情
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Name Input Modal -->
+<!-- 修改模态框部分 -->
+<div class="modal fade slide" id="nameModal" tabindex="-1" aria-labelledby="nameModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-teal text-white">
+                <h5 class="modal-title" id="nameModalLabel"><i class="fas fa-crown me-2"></i>登上排行榜</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="saveForm" method="post" action="{% url 'save_score' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="playerName" class="form-label">敢问尊姓大名？</label>
+                        <input type="text" class="form-control" id="playerName" name="name" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-teal">
+                        <i class="fas fa-check me-1"></i>确认提交
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const nameModal = document.getElementById('nameModal');
+    const playerNameInput = document.getElementById('playerName');
+    let modalInstance = null;
+
+    // 从会话存储中获取用户名（假设在登录时已存储）
+    const username = "{{ request.session.username|default:'' }}";
+    
+    document.getElementById('saveScoreBtn').addEventListener('click', function() {
+        if (!modalInstance) {
+            modalInstance = new bootstrap.Modal(nameModal, {
+                backdrop: false,
+                keyboard: true
+            });
+        }
+        
+        // 如果存在用户名，则填充到输入框中
+        if (username) {
+            playerNameInput.value = username;
+        }
+        
+        // 重置动画类
+        nameModal.classList.remove('hide');
+        nameModal.classList.add('show');
+        
+        modalInstance.show();
+    });
+
+    // 监听模态框隐藏事件，添加退出动画
+    nameModal.addEventListener('hide.bs.modal', function() {
+        nameModal.classList.add('hide');
+        setTimeout(() => {
+            nameModal.classList.remove('show');
+        }, 300); // 匹配动画持续时间
+    });
+
+    
+      document.getElementById('saveForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const form = this;
+        const formData = new FormData(form);
+        const submitButton = form.querySelector('button[type="submit"]');
+        const originalText = submitButton.innerHTML;
+
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> 提交中...';
+
+        // 添加CSRF token
+        const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+        
+        fetch(form.action, {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest',
+                'X-CSRFToken': csrfToken
+            },
+            credentials: 'include'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('网络响应不正常');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // 成功提交后跳转
+                window.location.href = data.redirect_url;
+            } else {
+                throw new Error(data.error || '未知错误');
+            }
+        })
+        .catch(error => {
+            console.error('错误:', error);
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+            alert('提交失败: ' + error.message);
+        });
+    });
+});
+
+
+</script>
+{% endblock %}

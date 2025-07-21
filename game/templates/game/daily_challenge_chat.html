@@ -1,0 +1,154 @@
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block extra_css %}
+<style>
+    .daily-challenge-chat {
+        background-color: #f5f0ff;
+        border: 2px solid #6a11cb;
+        border-radius: 10px;
+    }
+    .daily-header {
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: white;
+    }
+    .trust-meter .progress-bar {
+        background-color: #6a11cb;
+    }
+    .btn-daily-send {
+        background-color: #6a11cb;
+        color: white;
+    }
+    .btn-daily-send:hover {
+        background-color: #2575fc;
+    }
+    .daily-badge {
+        background-color: #6a11cb;
+    }
+    
+    /* 添加与一般模式相同的聊天样式 */
+    .chat-display {
+        height: 400px;
+        overflow-y: auto;
+        padding: 15px;
+        background-color: white;
+        border-radius: 8px;
+        margin-bottom: 15px;
+    }
+    
+    .message {
+        margin-bottom: 12px;
+        padding: 10px 15px;
+        border-radius: 18px;
+        max-width: 80%;
+        word-wrap: break-word;
+        position: relative;
+    }
+    
+    .message.user {
+        background-color: #e3f2fd;
+        margin-left: auto;
+        border-bottom-right-radius: 4px;
+    }
+    
+    .message.assistant {
+        background-color: #f1f1f1;
+        margin-right: auto;
+        border-bottom-left-radius: 4px;
+    }
+    
+    .message.system {
+        background-color: #fff8e1;
+        margin: 10px auto;
+        text-align: center;
+        max-width: 90%;
+        font-size: 0.9em;
+        color: #666;
+    }
+    
+    .message .sender {
+        font-weight: bold;
+        margin-right: 5px;
+    }
+    
+    .message .content {
+        display: inline;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<input type="hidden" id="leaderboardUrl" value="{% url 'daily_challenge_leaderboard' %}">
+<input type="hidden" id="dailyChallengeUrl" value="{% url 'daily_challenge' %}">
+<div class="game-container animate__animated animate__fadeIn">
+    <div class="daily-header text-center p-3 mb-4 rounded">
+        <h1 class="display-5 fw-bold"><i class="fas fa-calendar-day me-2"></i>每日挑战</h1>
+        <p class="lead">今天的特殊挑战 - {{ challenge_date|date:"Y年m月d日" }}</p>
+        <span class="badge daily-badge">患者性格: {{ persona }}</span>
+    </div>
+    
+    <div class="daily-challenge-chat p-3">
+        <div id="chatDisplay" class="chat-display"></div>
+        
+        <div class="game-info p-3">
+            <div class="trust-meter mb-2">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>病人信任度</span>
+                    <span id="trustValue">100%</span>
+                </div>
+                <div class="progress">
+                    <div id="trustBar" class="progress-bar" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div id="hintText" class="hint-text">
+                    <i class="fas fa-comment-dots me-2"></i>轮到你发言了！
+                </div>
+                <div id="turnCount" class="turn-count">
+                    <i class="fas fa-redo me-1"></i>回合: <span>0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-section p-3">
+            <div class="input-group">
+                <textarea id="messageInput" class="form-control" rows="2" placeholder="输入你的诊断问题..."></textarea>
+                <button id="sendButton" class="btn btn-daily-send">
+                    <i class="fas fa-paper-plane me-1"></i>发送
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-4">
+        <button id="resetButton" class="btn btn-outline-primary">
+            <i class="fas fa-trash-alt me-1"></i>放弃挑战
+        </button>
+    </div>
+</div>
+
+<!-- 游戏结束模态框 -->
+<div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title"><i class="fas fa-skull-crossbones me-2"></i>挑战失败</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>病人对你的诊断能力失去信任，终止了问诊！</p>
+                <p>点击下方按钮返回挑战页面。</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" onclick="window.location.href='{% url 'daily_challenge' %}'">
+                    <i class="fas fa-arrow-left me-1"></i>返回挑战
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/daily_challenge_chat.js' %}"></script>
+{% endblock %}

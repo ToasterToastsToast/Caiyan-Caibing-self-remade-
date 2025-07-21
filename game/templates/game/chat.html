@@ -1,0 +1,92 @@
+
+{% extends "game/base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="game-container animate__animated animate__fadeIn">
+    <div class="header-section text-center mb-4">
+        <h1 class="display-5 fw-bold text-pink">医生诊断挑战</h1>
+        <p class="lead">通过问诊找出患者的疾病！回合越少，信任越强，得分越高！</p>
+    </div>
+    
+    <div class="chat-card">
+        <div id="chatDisplay" class="chat-display"></div>
+        
+        <div class="game-info p-3">
+            <div class="trust-meter mb-2">
+                <div class="d-flex justify-content-between mb-1">
+                    <span>病人信任度</span>
+                    <span id="trustValue">100%</span>
+                </div>
+                <div class="progress">
+                    <div id="trustBar" class="progress-bar bg-warning" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+            <div class="progress-container mb-2">
+                <div id="progressBar" class="progress" style="display: none; height: 6px;">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                        role="progressbar" 
+                        style="width: 100%; background-color: var(--primary-light);"></div>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center">
+                <div id="hintText" class="hint-text">
+                    <i class="fas fa-comment-dots me-2"></i>轮到你发言了！
+                </div>
+                <div id="turnCount" class="turn-count">
+                    <i class="fas fa-redo me-1"></i>回合: <span>0</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="input-section p-3">
+            <div class="input-group">
+                <textarea id="messageInput" class="form-control" rows="2" placeholder="输入你的诊断问题..."></textarea>
+                <button id="sendButton" class="btn btn-pink">
+                    <i class="fas fa-paper-plane me-1"></i>发送
+                </button>
+            </div>
+            <div class="d-flex justify-content-end mt-2">
+                <button id="resetButton" class="btn btn-outline-pink">
+                    <i class="fas fa-trash-alt me-1"></i>重新开始
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="tips-section mt-4 p-3 rounded">
+        <h5><i class="fas fa-lightbulb me-2"></i>游戏提示</h5>
+        <ul class="tips-list">
+            <li>从一般症状开始询问，逐步缩小范围</li>
+            <li>注意患者的性格特点会影响回答方式</li>
+            <li>可以询问病史、生活习惯等辅助诊断</li>
+            <li>病人的耐心是有限的！</li>
+        </ul>
+    </div>
+        
+    <!-- 游戏结束模态框 -->
+    <div class="modal fade" id="gameOverModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title"><i class="fas fa-skull-crossbones me-2"></i>游戏结束</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>病人对你的诊断能力失去信任，终止了问诊！</p>
+                    <p>点击下方按钮重新开始游戏。</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" onclick="location.reload()">
+                        <i class="fas fa-redo me-1"></i>重新开始
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{% static 'js/chat.js' %}"></script>
+{% endblock %}

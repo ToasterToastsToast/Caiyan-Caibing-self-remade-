@@ -1,0 +1,147 @@
+<!-- templates/game/profile.html -->
+{% extends "game/base.html" %}
+
+{% block content %}
+<div class="game-container animate__animated animate__fadeIn">
+    <div class="header-section text-center mb-4">
+        <h3 class="text-teal"><i class="fas fa-user-circle me-2"></i>个人空间</h3>
+        <div class="username-display mb-4">
+            <h1 class="display-4 text-teal">{{ request.session.username }}</h1>
+        </div>
+        <p class="text-muted">查看你的游戏成就</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-trophy text-warning me-2"></i>个人最高分</h5>
+                    <p class="display-4 text-teal">{{ user.high_score }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 mb-4">
+            <div class="card h-100 shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title"><i class="fas fa-star text-warning me-2"></i>获胜次数</h5>
+                    <p class="display-4 text-teal">{{ user.win_count }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 已诊断的疾病列表 -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-teal text-white">
+            <h5 class="mb-0"><i class="fas fa-disease me-2"></i>已发现的疾病</h5>
+        </div>
+        <div class="card-body">
+            {% if user.get_diagnosed_diseases %}
+            <div class="row">
+                {% for disease in user.get_diagnosed_diseases %}
+                <div class="col-md-4 mb-3">
+                    {% for disease_data in diseases %}
+                        {% if disease_data.name == disease.disease_name %}
+                        <a href="{{ disease_data.link }}" target="_blank" class="disease-link">
+                            <div class="disease-card p-3 border rounded">
+                                <h6 class="text-teal mb-2">{{ disease.disease_name }}</h6>
+                                <small class="text-muted">
+                                    <i class="far fa-clock me-1"></i>
+                                    {{ disease.diagnosed_at|date:"Y-m-d" }}
+                                </small>
+                            </div>
+                        </a>
+                        {% endif %}
+                    {% endfor %}
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="text-center py-3">
+                <i class="fas fa-info-circle me-2"></i>暂无诊断记录
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- 增强的称号系统 -->
+    <div class="title-section text-center mt-5 mb-5 animate__animated animate__fadeInUp">
+        <h4 class="text-muted mb-4"><i class="fas fa-medal me-2"></i>当前称号</h4>
+        <div class="title-badge-container">
+            {% if user.win_count >= 20 %}
+            <div class="title-badge god animate__animated animate__tada animate__infinite">
+                <div class="title-icon"><i class="fas fa-crown"></i></div>
+                <div class="title-main">医圣</div>
+                <div class="title-subtext">20+次胜利</div>
+                <div class="title-glow"></div>
+            </div>
+            {% elif user.win_count >= 15 %}
+            <div class="title-badge legendary animate__animated animate__heartBeat animate__infinite">
+                <div class="title-icon"><i class="fas fa-gem"></i></div>
+                <div class="title-main">传奇医生</div>
+                <div class="title-subtext">15+次胜利</div>
+                <div class="title-glow"></div>
+            </div>
+            {% elif user.win_count >= 10 %}
+            <div class="title-badge epic animate__animated animate__pulse animate__infinite">
+                <div class="title-icon"><i class="fas fa-shield-alt"></i></div>
+                <div class="title-main">史诗医生</div>
+                <div class="title-subtext">10+次胜利</div>
+                <div class="title-glow"></div>
+            </div>
+            {% elif user.win_count >= 5 %}
+            <div class="title-badge rare animate__animated animate__swing animate__infinite">
+                <div class="title-icon"><i class="fas fa-award"></i></div>
+                <div class="title-main">杰出医生</div>
+                <div class="title-subtext">5+次胜利</div>
+                <div class="title-glow"></div>
+            </div>
+            {% elif user.win_count >= 1 %}
+            <div class="title-badge common">
+                <div class="title-icon"><i class="fas fa-user-md"></i></div>
+                <div class="title-main">普通医生</div>
+                <div class="title-subtext">1+次胜利</div>
+                <div class="title-glow"></div>
+            </div>
+            {% else %}
+            <div class="title-badge novice">
+                <div class="title-icon"><i class="fas fa-graduation-cap"></i></div>
+                <div class="title-main">实习医生</div>
+                <div class="title-subtext">尚未获胜</div>
+                <div class="title-glow"></div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% if user.win_count >= 20 %}
+    <div class="text-center mt-4">
+        <a href="{% url 'submit_disease' %}" class="btn btn-teal btn-lg px-4 py-2" style="font-size: 1.2rem;">
+            <i class="fas fa-plus-circle me-1"></i>贡献病例 - 分享您的医学知识
+        </a>
+    </div>
+    {% else %}
+    <div class="text-center mt-4">
+        <div class="d-inline-block position-relative">
+            <a href="#" class="btn btn-secondary btn-lg px-4 py-2 disabled" style="font-size: 1.2rem;">
+                <i class="fas fa-lock me-1"></i>贡献病例
+            </a>
+            <div class="unlock-hint bg-teal text-white p-2 rounded shadow-sm" style="position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); white-space: nowrap; margin-bottom: 10px;">
+                需要20次胜利解锁此功能
+                <div style="position: absolute; top: 100%; left: 50%; margin-left: -5px; border-width: 5px; border-style: solid; border-color: var(--primary-color) transparent transparent transparent;"></div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{% url 'chat' %}" class="btn btn-teal">
+            <i class="fas fa-gamepad me-1"></i>开始新游戏
+        </a>
+        <a href="{% url 'scoreboard' %}" class="btn btn-outline-teal ms-2">
+            <i class="fas fa-trophy me-1"></i>查看排行榜
+        </a>
+    </div>
+</div>
+{% endblock %}

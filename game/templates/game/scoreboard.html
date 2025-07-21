@@ -1,0 +1,152 @@
+{% extends "game/base.html" %}
+
+{% block content %}
+<div class="scoreboard-container animate__animated animate__fadeIn">
+    <div class="header-section text-center mb-4">
+        <h1 class="display-5 fw-bold text-pink"><i class="fas fa-trophy me-2"></i>排行榜</h1>
+        <p class="lead">看看谁是最佳诊断医生？<br>每日排行榜 - 每天自动重置</p>
+    </div>
+    
+    <div class="table-responsive">
+        <table class="table table-hover leaderboard-table">
+            <thead>
+                <tr>
+                    <th>排名</th>
+                    <th>玩家</th>
+                    <th>分数</th>
+                    <th>时间</th>
+                    <th>操作</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td>
+                        {% if forloop.counter == 1 %}
+                            <span class="gold">🥇</span>
+                        {% elif forloop.counter == 2 %}
+                            <span class="silver">🥈</span>
+                        {% elif forloop.counter == 3 %}
+                            <span class="bronze">🥉</span>
+                        {% else %}
+                            {{ forloop.counter }}
+                        {% endif %}
+                    </td>
+                    <td>{{ record.name }}</td>
+                    <td>{{ record.score }}</td>
+                    <td>{{ record.created_at|date:"Y-m-d H:i" }}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-pink view-log" data-record-id="{{ record.id }}">
+                            <i class="fas fa-eye me-1"></i>查看对话
+                        </button>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="5" class="text-center py-4">
+                        <i class="fas fa-inbox me-2"></i>暂无记录，快来成为第一个上榜的玩家吧！
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="text-center mt-4">
+        <a href="{% url 'chat' %}" class="btn btn-pink">
+            <i class="fas fa-gamepad me-1"></i>开始游戏
+        </a>
+    </div>
+</div>
+
+<!-- Log Modal -->
+<div class="modal fade" id="logModal" tabindex="-1" aria-labelledby="logModalLabel" aria-hidden="true" style="z-index: 1060;">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header bg-teal text-white">
+                <h5 class="modal-title" id="logModalLabel"><i class="fas fa-comments me-2"></i>诊断对话记录</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-0">
+                <pre id="logContent" class="log-content p-3 m-0"></pre>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-teal" data-bs-dismiss="modal">
+                    <i class="fas fa-times me-1"></i>关闭
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal-backdrop fade show" id="modalBackdrop" style="display: none; z-index: 1050;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const modalBackdrop = document.getElementById('modalBackdrop');
+    
+    document.querySelectorAll('.view-log').forEach(button => {
+        button.addEventListener('click', function() {
+            const recordId = this.getAttribute('data-record-id');
+            
+            // 显示加载状态
+            const logContent = document.getElementById('logContent');
+            logContent.textContent = "加载中...";
+            
+            // 显示遮罩层
+            modalBackdrop.style.display = 'block';
+            setTimeout(() => {
+                modalBackdrop.classList.add('show');
+            }, 10);
+            
+            fetch(`/get_log/${recordId}/`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.error) {
+                        throw new Error(data.error);
+                    }
+                    
+                    document.getElementById('logContent').textContent = data.log;
+                    const modal = new bootstrap.Modal(document.getElementById('logModal'), {
+                        backdrop: false, // 禁用默认的backdrop
+                        keyboard: true    // 允许ESC键关闭
+                    });
+                    
+                    modal.show();
+                    
+                    // 隐藏自定义遮罩层
+                    modalBackdrop.classList.remove('show');
+                    setTimeout(() => {
+                        modalBackdrop.style.display = 'none';
+                    }, 300);
+                    
+                    // 当模态框关闭时确保遮罩层也被移除
+                    document.getElementById('logModal').addEventListener('hidden.bs.modal', function() {
+                        modalBackdrop.classList.remove('show');
+                        modalBackdrop.style.display = 'none';
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    document.getElementById('logContent').textContent = `加载失败: ${error.message}`;
+                    
+                    // 仍然显示模态框但隐藏遮罩层
+                    const modal = new bootstrap.Modal(document.getElementById('logModal'));
+                    modal.show();
+                    
+                    modalBackdrop.classList.remove('show');
+                    setTimeout(() => {
+                        modalBackdrop.style.display = 'none';
+                    }, 300);
+                });
+        });
+    });
+});
+</script>
+{% endblock %}
